@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VELORA CAFFE — نظام التشغيل والصلاحيات</title>
+<style>
+  :root {
+    --bg-main: #0c0b09;
+    --bg-card: #161410;
+    --bg-card-hover: #1e1b15;
+    --bg-elevated: #231f18;
+    --gold: #d4af37;
+    --gold-light: #f0d378;
+    --gold-dim: rgba(212, 175, 55, 0.16);
+    --border-gold: rgba(212, 175, 55, 0.35);
+    --text-main: #f6f2e7;
+    --text-muted: #b7ad96;
+    --success: #2ea043;
+    --danger: #e5534b;
+    --warning: #d29922;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding-bottom: 84px;
+    line-height: 1.65;
+  }
+
+  .topbar {
+    background: linear-gradient(180deg, #1a1610 0%, #110f0b 100%);
+    border-bottom: 1px solid var(--border-gold);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+
+  .brand-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--gold-dim);
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-light);
+    font-weight: 800;
+    font-size: 16px;
+  }
+
+  .brand-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--gold-light);
+    letter-spacing: 0.4px;
+  }
+
+  .brand-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .btn {
+    background: var(--bg-elevated);
+    color: var(--text-main);
+    border: 1px solid var(--border-gold);
+    border-radius: 9px;
+    padding: 8px 13px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--gold);
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #dfc05e 0%, #c19a28 100%);
+    color: #120f08;
+    border: none;
+    font-weight: 800;
+  }
+
+  .btn-gold:hover {
+    filter: brightness(1.06);
+  }
+
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 18px;
+  }
+
+  .hero-card {
+    background: linear-gradient(135deg, #1b1710 0%, #13110c 100%);
+    border: 1px solid var(--border-gold);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+
+  .role-pill {
+    display: inline-block;
+    background: var(--gold-dim);
+    color: var(--gold-light);
+    border: 1px solid var(--border-gold);
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .section-heading {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--gold-light);
+    margin: 18px 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 12px;
+  }
+
+  .role-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-gold);
+    border-radius: 14px;
+    padding: 15px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .role-card:hover {
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+    border-color: var(--gold-light);
+  }
+
+  .role-num {
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .role-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-main);
+  }
+
+  .role-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .tab-btn {
+    background: var(--bg-card);
+    color: var(--text-muted);
+    border: 1px solid var(--border-gold);
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .tab-btn.active {
+    background: var(--gold-dim);
+    color: var(--gold-light);
+    border-color: var(--gold);
+  }
+
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-gold);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+
+  .search-input, .form-input, .form-select {
+    width: 100%;
+    background: var(--bg-main);
+    color: var(--text-main);
+    border: 1px solid var(--border-gold);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .chapter-item {
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: var(--bg-elevated);
+    border-radius: 11px;
+    padding: 13px;
+    margin-bottom: 10px;
+  }
+
+  .chapter-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+  }
+
+  .chapter-body {
+    font-size: 13px;
+    color: var(--text-main);
+  }
+
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .book-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-gold);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .book-card.locked {
+    opacity: 0.65;
+    border-style: dashed;
+  }
+
+  .status-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  .status-open {
+    background: rgba(46, 160, 67, 0.18);
+    color: #56d364;
+  }
+
+  .status-locked {
+    background: rgba(229, 83, 75, 0.18);
+    color: #ff7b72;
+  }
+
+  .check-group-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--gold-light);
+    margin: 12px 0 8px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--bg-elevated);
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .check-item input {
+    margin-top: 3px;
+    accent-color: var(--gold);
+    transform: scale(1.15);
+  }
+
+  .progress-wrap {
+    background: var(--bg-main);
+    border: 1px solid var(--border-gold);
+    border-radius: 999px;
+    height: 12px;
+    overflow: hidden;
+    margin: 10px 0 14px;
+  }
+
+  .progress-bar {
+    background: linear-gradient(90deg, #c19a28, #f0d378);
+    height: 100%;
+    width: 0%;
+    transition: width 0.25s ease;
+  }
+
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #12100c;
+    border-top: 1px solid var(--border-gold);
+    display: flex;
+    justify-content: space-around;
+    padding: 9px 6px;
+    z-index: 40;
+  }
+
+  .nav-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  .nav-btn.active {
+    color: var(--gold-light);
+    background: var(--gold-dim);
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 60;
+  }
+
+  .modal-backdrop.open {
+    display: flex;
+  }
+
+  .modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--gold);
+    border-radius: 16px;
+    max-width: 680px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 18px;
+  }
+
+  .modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-gold);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+
+  .result-box {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-gold);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 13px;
+  }
+
+  .log-entry {
+    background: var(--bg-elevated);
+    border-right: 3px solid var(--gold);
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand-box">
+    <div class="brand-badge">V</div>
+    <div>
+      <div class="brand-title">VELORA CAFFE</div>
+      <div class="brand-sub">إعداد وتدريب: MP7 Foundation</div>
+    </div>
+  </div>
+  <button class="btn" id="switchRoleBtn" onclick="goHome()">تبديل الدور / الرئيسية</button>
+</header>
+
+<main class="container" id="appContainer"></main>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="navHome" onclick="goHome()">الرئيسية</button>
+  <button class="nav-btn" id="navCash" onclick="openToolModal('cash')">جرد الكاش والعهدة</button>
+  <button class="nav-btn" id="navReport" onclick="openToolModal('report')">بلاغ نقص / هدر</button>
+</nav>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modalTitle" style="color: var(--gold-light); font-size: 16px;"></h3>
+      <button class="btn" onclick="closeModal()">إغلاق</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const ROLES_DATA = [
+  {
+    id: "owner",
+    order: "01",
+    title: "الأونر",
+    subtitle: "من صاحب مشروع إلى قائد براند — دليل الأونر",
+    sourceFile: "الاونر.pdf",
+    canOpenAllBooks: true,
+    chapters: [
+      { title: "عقلية الأونر", body: "دورك تبني نظام يشتغل وتحدد الاتجاه وتختار الناس الصح وتوفر الأدوات وتتابع النتائج، مش إنك تكون أسرع واحد في حل كل مشكلة صغيرة." },
+      { title: "رؤية البراند وأولويات 90 يوم", body: "حدد رؤية واضحة لـ VELORA وحوّلها إلى 3 أولويات قابلة للقياس خلال 90 يوم تظهر في قرارات المنتج والخدمة اليومية." },
+      { title: "الهيكل والمسؤوليات والتفويض", body: "لكل مهمة صاحب مسؤول واحد واضح، وفوّض النتيجة والحدود وموعد المراجعة، ولا تسحب المهمة من صاحبها إلا في خطر أو تجاوز صلاحيات." },
+      { title: "مؤشرات الأداء وإدارة المديرين", body: "تابع المؤشرات الأساسية معاً (المبيعات، متوسط الفاتورة، تكرار الشراء، تقييم العملاء، تكلفة العمالة والخامات، الهدر، وتوافر الأصناف) وحاسب على النتائج والأدلة." }
+    ],
+    checklist: {
+      "قائمة مراجعة شهرية": [
+        "هل كل مهمة لها مسؤول واضح؟",
+        "هل الصلاحيات مكتوبة ومحددة؟",
+        "هل التقارير منتظمة ودقيقة؟",
+        "هل يوجد بديل لكل منصب حساس؟",
+        "هل العملاء يحصلون على نفس مستوى التجربة؟"
+      ],
+      "متابعة خطة 90 يوم": [
+        "أول 30 يوم: مراجعة الأرقام، الاستماع للمديرين، وتحديد أكبر 3 فجوات",
+        "من 31 إلى 60 يوم: كتابة الصلاحيات، تثبيت التقارير، وتدريب المسؤولين",
+        "من 61 إلى 90 يوم: تقييم النتائج، تصحيح المؤشرات، وتجهيز خطة تحسين أو توسع"
+      ]
+    },
+    pledge: "ميثاق الأونر: ألتزم بتوضيح الرؤية، واختيار الأشخاص المناسبين، وتحديد المسؤوليات والصلاحيات، وتوفير الموارد، ومتابعة النتائج بالأرقام دون سحب دور المسؤول لمجرد اختلاف أسلوب التنفيذ."
+  },
+  {
+    id: "manager",
+    order: "02",
+    title: "المدير",
+    subtitle: "دليل مدير فرع فيلورا + صلاحية فتح أي كتاب",
+    sourceFile: "المدير.pdf",
+    canOpenAllBooks: true,
+    chapters: [
+      { title: "دور مدير الفرع وإدارة قبل الشيفت", body: "قيادة النتائج عبر نظام واضح: مراجعة الحضور وتوزيع المناطق، التأكد من النظافة والجاهزية والمخزون، معرفة الأصناف غير المتاحة، وعمل briefing مختصر." },
+      { title: "إدارة التشغيل اليومي وقيادة الفريق", body: "مراقبة وقت الانتظار وحركة الطلبات وجودة المشروبات والتقديم، وحل الاختناقات بين الصالة والبار والمطبخ، وتصحيح الأخطاء على انفراد." },
+      { title: "المبيعات والمخزون والتكلفة", body: "متابعة متوسط الفاتورة والأصناف الأكثر والأقل مبيعاً، ومراجعة الاستلام والتخزين والصلاحية والهدر دون تغيير الوصفة أو الحصة إلا بإجراء معتمد." },
+      { title: "التعامل مع الويتر والكابتن والباريستا", body: "توضيح توزيع المناطق وتسليم الطاولات، ومنع جملة مش شغلي، ومتابعة اتباع الوصفات المعتمدة ووقت التحضير والمرتجعات." }
+    ],
+    checklist: {
+      "قبل الشيفت": [
+        "مراجعة حضور الفريق وتوزيع المناطق والمسؤوليات",
+        "التأكد من النظافة، الجاهزية، والمخزون الأساسي",
+        "معرفة الأصناف غير المتاحة وتحديثات المنيو وإبلاغ الفريق",
+        "عمل briefing مختصر لهدف اليوم وتنبيهات الخدمة"
+      ],
+      "أثناء الشيفت": [
+        "متابعة جودة الخدمة للعملاء وحركة الطلبات ووقت الانتظار",
+        "دعم الفريق وحل الاختناقات بالتنسيق بين الصالة والبار والمطبخ"
+      ],
+      "بعد الشيفت": [
+        "مراجعة ملخص المبيعات، الهدر، الشكاوى، النواقص، والملاحظات التدريبية",
+        "تحديد مسؤول وموعد متابعة لأي مشكلة متكررة"
+      ]
+    },
+    pledge: "ميثاق مدير Velora: ألتزم بخلق بيئة عمل محترمة، ونظام واضح، وتجربة عميل مميزة، ونتائج مستدامة، وأن أكون قدوة في الالتزام والهدوء والعدل."
+  },
+  {
+    id: "assistant_manager",
+    order: "03",
+    title: "مساعد المدير",
+    subtitle: "المتابعة الإدارية والتنسيق وتجهيز التقارير داخل الشيفت",
+    sourceFile: "كاشير ومساعد.pdf",
+    canOpenAllBooks: false,
+    chapters: [
+      { title: "المساعدة الإدارية وحدود الصلاحيات", body: "المساعدة تعني المتابعة والتنظيم ورفع المعلومة بدقة؛ لا تغيّر سعراً ولا تمنح خصماً ولا توافق على مرتجع أو تعدل جدولاً أو تطلب شراءً من غير تفويض واضح." },
+      { title: "متابعة المخزون والنواقص والهدر", body: "عدّ سريع ومقارنة بالحد الأدنى، وتسجيل الهدر بالكمية والسبب واسم المسؤول، والالتزام بمبدأ الوارد أولاً يُستخدم أولاً (FIFO)." },
+      { title: "التنسيق مع الكاشير والباريستا وحل المشكلات", body: "توثيق التعديلات في التذكرة، ومتابعة الفواتير المفتوحة قبل الإغلاق، وتصعيد المخاطر أو الأعطال للمدير مع ترك القرار لصاحب الصلاحية." }
+    ],
+    checklist: {
+      "قبل الشيفت": [
+        "التأكد من جاهزية المحطة والمستلزمات وتسجيل الأعطال قبل التشغيل"
+      ],
+      "أثناء الشيفت": [
+        "متابعة ترتيب الصالة وتنفيذ المهام ووقت الطلبات",
+        "عدّ سريع للنواقص وتسجيل الهدر وتطبيق مبدأ FIFO",
+        "التنسيق مع الكاشير والكابتن والباريستا وتصعيد المشاكل للمسؤول"
+      ],
+      "قبل المغادرة": [
+        "إغلاق الفواتير المفتوحة، طباعة التقارير، جرد الكاش وفصل العهدة، والتوقيع"
+      ]
+    },
+    pledge: "ميثاق الكاشير ومساعد المدير: أتعهد بالأمانة في العهدة، والدقة في الفواتير، والهدوء مع الضيوف، والعدالة مع الفريق، والالتزام بحدود الصلاحية."
+  },
+  {
+    id: "barista",
+    order: "04",
+    title: "الباريستا",
+    subtitle: "دليل الباريستا في Velora — الأساسيات، المشروبات، الجودة، والابتكار",
+    sourceFile: "باريستا.pdf",
+    canOpenAllBooks: false,
+    chapters: [
+      { title: "عقلية الباريستا وفهم القهوة", body: "الالتزام اليومي والنظافة والهدوء؛ فهم تأثير نوع البن ومصدره والمعالجة والتحميص والطحن والتخزين، وحفظ البن بعيداً عن الحرارة والرطوبة والروائح." },
+      { title: "أساسيات الإسبريسو واللبن والتبخير", body: "الالتزام بالجرعة والتوزيع والتسوية والطحن ووقت الاستخلاص والميزان والمؤقت، والبدء بلبن بارد وإبريق نظيف دون إعادة تسخين أو خلط بقايا، وتنظيف عصاية البخار فوراً." },
+      { title: "إتقان المنيو وثبات الجودة والنظافة", body: "اتباع recipe card المعتمدة، ومراجعة حجم الكوب والثلج والنظافة قبل التسليم، ومنع التلوث المتبادل ومتابعة الصلاحية والحساسية الغذائية." },
+      { title: "تنظيم البار وقت الضغط وابتكار المشروبات", body: "العمل خطوة بخطوة وقت الزحمة دون اختصار النظافة أو الدقة، واختبار أي فكرة مشروب جديد وتوثيقها واعتمادها قبل إضافتها للمنيو." }
+    ],
+    checklist: {
+      "قبل الشيفت": [
+        "نظافة المعدات وسطح العمل واليدين والزي",
+        "جاهزية الخامات ومراجعة المنيو والوصفات المعتمدة وترتيب البار"
+      ],
+      "أثناء الشيفت": [
+        "الالتزام بالوصفة والاستخلاص وتبخير اللبن وتنظيف عصاية البخار فوراً",
+        "النظافة المستمرة ومتابعة الأوردرات والتواصل مع الكابتن والويتر"
+      ],
+      "بعد الشيفت": [
+        "التنظيف حسب الجدول وحفظ الخامات ومتابعة الصلاحية",
+        "تسجيل النواقص أو الأعطال وتسليم ملاحظات واضحة"
+      ]
+    },
+    pledge: "تعهد جودة الباريستا: أتعهد بتقديم كل مشروب وفق الوصفة والمعايير المعتمدة وبأعلى درجات النظافة والسلامة والتعاون مع فريق الخدمة."
+  },
+  {
+    id: "cashier",
+    order: "05",
+    title: "الكاشير",
+    subtitle: "إدارة الكاشير، وسائل الدفع، دقة العهدة، والتقفيل اليومي",
+    sourceFile: "كاشير ومساعد.pdf",
+    canOpenAllBooks: false,
+    chapters: [
+      { title: "دور الكاشير وفتح الشيفت", body: "نقطة الربط بين الضيف والصالة والباريستا والإدارة؛ استلام العهدة وعدّ الفكة أمام الطرفين وتسجيل الرقم والتوقيع، وفحص POS والطابعة والإنترنت والفيزا والأسعار." },
+      { title: "وسائل الدفع ومعادلة العهدة", body: "تسجيل الكاش والفيزا والمحفظة الإلكترونية بدقة؛ النقد المتوقع = عهدة البداية + المبيعات النقدية - المرتجعات/المصروفات المعتمدة، وعدم خلط الأموال الشخصية أو السلف من العهدة." },
+      { title: "أخطاء الفواتير والمرتجعات والبيع الإضافي", body: "تعديل الفاتورة قبل الإقفال أو استخدام الإلغاء/المرتجع المعتمد مع التوثيق وأخذ الموافقة، واقتراح إضافة مناسبة بلطف واحترام رفض الضيف." }
+    ],
+    checklist: {
+      "قبل الشيفت": [
+        "استلام العهدة وعدّ الفكة أمام الطرفين وتسجيل الرقم والتوقيع",
+        "تجربة نظام نقاط البيع والطابعة والإنترنت وجهاز الدفع وتسجيل الدخول باليوزر الخاص",
+        "مراجعة الأسعار والعروض وتجهيز المحطة وتسجيل الأعطال"
+      ],
+      "أثناء الشيفت": [
+        "مطابقة الطلب مع الفاتورة وتوضيح السعر ووقت الانتظار قبل الدفع",
+        "تسجيل وسيلة الدفع الصحيحة والتنسيق مع الكابتن والباريستا"
+      ],
+      "قبل المغادرة": [
+        "تسليم البريك بالعد والتقرير والتوقيع، وإغلاق الفواتير المفتوحة",
+        "طباعة التقارير، جرد الكاش وفصل العهدة عن المبيعات، وتسليم المستندات بالتوقيع"
+      ]
+    },
+    pledge: "ميثاق الكاشير ومساعد المدير: أتعهد بالأمانة في العهدة، والدقة في الفواتير، والهدوء مع الضيوف، والالتزام بالإجراءات المعتمدة في كل معاملة."
+  },
+  {
+    id: "captain",
+    order: "06",
+    title: "الكابتن",
+    subtitle: "دليل الكابتن في Velora — قيادة الخدمة، تجربة العميل، والمبيعات",
+    sourceFile: "كابتن اوردر.pdf",
+    canOpenAllBooks: false,
+    chapters: [
+      { title: "قائد التجربة وتجهيز وإدارة الشيفت", body: "رؤية الصورة الكاملة للصالة: مراجعة النظافة وتوافر الأصناف وتوزيع مناطق الويترز، وترتيب الأولويات (مشكلة عميل، طلب متأخر، ثم المهام الروتينية)." },
+      { title: "استقبال العميل وفهمه وزيادة المبيعات باحترام", body: "تأكيد تسليم الطاولة للويتر دون تركها بلا مسؤول، وسؤال العميل عن احتياجه، واقتراح حجم أكبر أو منتج مكمل بلطف دون ضغط." },
+      { title: "تدريب الويتر والتنسيق بين الأقسام والقيادة وقت الضغط", body: "تقديم ملاحظات تدريبية فردية بعيداً عن إحراج الموظف أمام العميل، والتنسيق الهادئ بين الاستقبال والصالة والبار وقت الزحمة." }
+    ],
+    checklist: {
+      "قبل فتح الباب": [
+        "مراجعة نظافة الصالة والطاولات والممرات",
+        "التأكد من توافر الأصناف ومراجعة تحديثات المنيو وإبلاغ الفريق",
+        "توزيع مناطق الويترز بوضوح وتأكيد جاهزية الباريستا"
+      ],
+      "أثناء الشيفت": [
+        "متابعة الطاولات من الجلوس حتى المغادرة وتأكيد تسليم الطاولة للويتر",
+        "ترتيب الأولويات وتوزيع الدعم حسب ضغط المناطق والتنسيق بين الأقسام"
+      ],
+      "تقييم الشيفت": [
+        "مراجعة متوسط الفاتورة ومبيعات الإضافات ومتابعة الأخطاء ووقت الانتظار",
+        "تسجيل ملاحظات قصيرة وتقديم ملاحظات تدريبية فردية للشيفت القادم"
+      ]
+    },
+    pledge: "ميثاق الكابتن: ألتزم بقيادة تجربة العميل بهدوء وعدل ووضوح، ودعم الفريق وقت الضغط، والحفاظ على التنسيق والاحترام بين جميع الأقسام."
+  },
+  {
+    id: "waiter",
+    order: "07",
+    title: "الويتر",
+    subtitle: "فن الخدمة والضيافة الحديثة — دليل الويتر",
+    sourceFile: "الويتر.pdf",
+    canOpenAllBooks: false,
+    chapters: [
+      { title: "شخصية الويتر ولغة الجسد والترحيب", body: "العمل بوعي وهدوء، والوقفة المستقيمة المريحة والتواصل البصري الطبيعي والنبرة الهادئة، والترحيب بابتسامة وتنظيم الجلوس بسلاسة." },
+      { title: "فهم العميل ومعرفة المنيو وأخذ الأوردر", body: "احترام رغبة العميل في الهدوء أو المساعدة، ومعرفة المكونات والأحجام والحساسية الغذائية دون تخمين، وكتابة الطلب فوراً وتكرار التفاصيل للتأكيد." },
+      { title: "متابعة الطاولة والشكاوى ووقت الضغط", body: "المتابعة دون إزعاج، والإصغاء للشكوى والاعتذار دون لوم المطبخ أو الزملاء أمام العميل، وترتيب الأولويات وقت الزحمة." },
+      { title: "إنهاء التجربة وقواعد الشيفت والسلوك", body: "مراجعة الحساب قبل تقديمه، وشكر العميل بصدق دون تعليق على البقشيش، وإبقاء الموبايل الشخصي بعيداً أثناء الخدمة وحماية خصوصية العملاء." }
+    ],
+    checklist: {
+      "قبل بداية الشيفت": [
+        "الالتزام بالمواعيد والجاهزية والنظافة الشخصية واليونيفورم",
+        "مراجعة مكونات الأصناف وطرق التحضير والبدائل والحساسية الغذائية"
+      ],
+      "أثناء الشيفت": [
+        "الترحيب وتنظيم الجلوس وفهم احتياجات العميل دون إزعاج",
+        "كتابة الطلب فوراً وتكرار التعديلات والأحجام والإضافات والحساسية للتأكيد",
+        "متابعة الطاولة، الإبلاغ المبكر عن التأخير، وحل الشكاوى بهدوء، والالتزام بقواعد الموبايل والخصوصية"
+      ],
+      "إنهاء التجربة": [
+        "مراجعة الحساب قبل تقديمه، شكر العميل بصدق، وتجهيز الطاولة نظيفة للضيف التالي"
+      ]
+    },
+    pledge: "ميثاق موظف الخدمة: أنا مسؤول عن جودة تعاملي، واحترام العميل وزميلي، وتمثيل Velora بصورة تليق بها، والحفاظ على النظافة والسلامة والخصوصية."
+  },
+  {
+    id: "drive_thru",
+    order: "08",
+    title: "خدمة السيارات / الاستيورد",
+    subtitle: "دليل التشغيل والتدريب — خدمة السيارات (Drive-Thru)",
+    sourceFile: "خدمه السيارت.pdf",
+    canOpenAllBooks: false,
+    chapters: [
+      { title: "أمان حركة السيارات ونقطة الوقوف", body: "السلامة أولاً: لا تبدأ أخذ الطلب أو التحصيل أو التسليم إلا بعد توقف السيارة بالكامل في نقطة الخدمة المعتمدة، وممنوع الوقوف في مسار الحركة أو مد الجسم داخل السيارة." },
+      { title: "استقبال السيارة وتسجيل الطلب والتحصيل", body: "تحية مختصرة وواضحة، وتحديد الصنف والحجم وساخن/مثلج والإضافات والعدد، وتأكيد الإجمالي، وتحصيل الكاش أو البطاقة أو المحفظة بدقة وإصدار الإيصال." },
+      { title: "إدارة الصف والتسليم والأخطاء والتقفيل", body: "الحفاظ على ترتيب الدور حسب الوصول، ومراجعة غطاء الكوب ونظافته وثباته قبل التسليم الآمن، وعدم رد الأموال أو التعويض دون صلاحية، وتقفيل العهدة والتقارير بدقة." }
+    ],
+    checklist: {
+      "قبل بداية الشيفت": [
+        "استلام العهدة وفحص جهاز نقاط البيع والدفع والطابعة",
+        "مراجعة المنيو والأسعار والتأكد من جاهزية الأكواب والأغطية والمناديل والنظافة"
+      ],
+      "مع كل سيارة": [
+        "انتظار توقف العربية بالكامل في نقطة الخدمة المعتمدة",
+        "الترحيب، سماع الطلب، تكراره للتأكيد، تسجيله، توضيح الإجمالي، التحصيل، ومتابعة التحضير والتسليم"
+      ],
+      "أثناء الشيفت": [
+        "تنظيم الدور وإدارة الصف حسب ترتيب الوصول ومتابعة وقت الانتظار",
+        "مراجعة الأكواب والغطاء قبل التسليم وتسجيل النواقص والهدر والأعطال"
+      ],
+      "قبل المغادرة": [
+        "تسليم البريك عند الحاجة، إغلاق الطلبات المفتوحة، طباعة التقارير، جرد الكاش، فصل العهدة، والتوقيع"
+      ]
+    },
+    pledge: "تعهد مهني: ألتزم بدقة كل طلب وكل عملية دفع، وسلامة نقطة الخدمة، وعدم التعامل مع سيارة متحركة، وعدم تجاوز صلاحيتي، والإبلاغ عن الخطأ بدل إخفائه."
+  }
+];
+
+let state = {
+  currentRole: null,
+  activeTab: "guide",
+  searchQuery: "",
+  checkedItems: {},
+  signatures: {},
+  reports: []
+};
+
+function getRoleById(id) {
+  return ROLES_DATA.find(r => r.id === id);
+}
+
+function goHome() {
+  state.currentRole = null;
+  state.activeTab = "guide";
+  state.searchQuery = "";
+  setActiveNav("navHome");
+  render();
+}
+
+function selectRole(roleId) {
+  state.currentRole = roleId;
+  state.activeTab = "guide";
+  state.searchQuery = "";
+  setActiveNav("navHome");
+  render();
+}
+
+function setActiveNav(navId) {
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  const el = document.getElementById(navId);
+  if (el) el.classList.add("active");
+}
+
+function render() {
+  const container = document.getElementById("appContainer");
+  if (!state.currentRole) {
+    renderRolesHub(container);
+  } else {
+    renderRoleWorkspace(container, getRoleById(state.currentRole));
+  }
+}
+
+function renderRolesHub(container) {
+  let html = `
+    <section class="hero-card">
+      <span class="role-pill">VELORA CAFFE • نظام الأدوار والصلاحيات</span>
+      <h1 style="font-size: 22px; color: var(--gold-light); margin-bottom: 6px;">اختر الدور للدخول إلى مساحة العمل</h1>
+      <p style="font-size: 13px; color: var(--text-muted);">
+        يظهر لكل دور تشغيلي دليله وقائمة متابعته وميثاقه، بينما يمتلك <strong>المدير</strong> و<strong>الأونر</strong> صلاحية فتح جميع الكتب والأدلة.
+      </p>
+    </section>
+
+    <div class="section-heading">
+      <span>تسلسل الأدوار في VELORA CAFFE</span>
+    </div>
+    <div class="roles-grid">
+  `;
+
+  ROLES_DATA.forEach(role => {
+    const permText = role.canOpenAllBooks ? "صلاحية فتح أي كتاب" : "دليل الدور المخصص";
+    html += `
+      <div class="role-card" onclick="selectRole('${role.id}')">
+        <div>
+          <div class="role-num">خانة ${role.order} • ${permText}</div>
+          <div class="role-name">${role.title}</div>
+          <div class="role-desc">${role.subtitle}</div>
+        </div>
+        <div style="font-size: 12px; color: var(--gold); font-weight: 700;">دخول ←</div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+function renderRoleWorkspace(container, role) {
+  const permLabel = role.canOpenAllBooks ? "صلاحية فتح أي كتاب متاحة" : "صلاحية الدليل المخصص للدور";
+
+  let html = `
+    <section class="hero-card">
+      <span class="role-pill">${permLabel} • ${role.sourceFile}</span>
+      <h1 style="font-size: 21px; color: var(--gold-light); margin-bottom: 4px;">${role.title}</h1>
+      <p style="font-size: 13px; color: var(--text-muted);">${role.subtitle}</p>
+    </section>
+
+    <div class="tabs">
+      <button class="tab-btn ${state.activeTab === "guide" ? "active" : ""}" onclick="switchTab('guide')">الدليل التدريبي</button>
+      <button class="tab-btn ${state.activeTab === "books" ? "active" : ""}" onclick="switchTab('books')">مكتبة الكتب والصلاحيات</button>
+      <button class="tab-btn ${state.activeTab === "checklist" ? "active" : ""}" onclick="switchTab('checklist')">قائمة المتابعة</button>
+      <button class="tab-btn ${state.activeTab === "pledge" ? "active" : ""}" onclick="switchTab('pledge')">الميثاق والتعهد</button>
+    </div>
+  `;
+
+  if (state.activeTab === "guide") {
+    html += renderGuideTab(role);
+  } else if (state.activeTab === "books") {
+    html += renderBooksTab(role);
+  } else if (state.activeTab === "checklist") {
+    html += renderChecklistTab(role);
+  } else if (state.activeTab === "pledge") {
+    html += renderPledgeTab(role);
+  }
+
+  container.innerHTML = html;
+}
+
+function switchTab(tab) {
+  state.activeTab = tab;
+  render();
+}
+
+function renderGuideTab(role) {
+  const q = state.searchQuery.trim();
+  const filtered = role.chapters.filter(ch =>
+    !q || ch.title.includes(q) || ch.body.includes(q)
+  );
+
+  let html = `
+    <div class="panel">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="ابحث داخل فصول دليل ${role.title}..."
+        value="${escapeHtml(state.searchQuery)}"
+        oninput="updateSearch(this.value)"
+      />
+  `;
+
+  if (filtered.length === 0) {
+    html += `<p style="font-size: 13px; color: var(--text-muted);">لا توجد نتائج مطابقة لكلمة البحث.</p>`;
+  } else {
+    filtered.forEach(ch => {
+      html += `
+        <div class="chapter-item">
+          <div class="chapter-title">${escapeHtml(ch.title)}</div>
+          <div class="chapter-body">${escapeHtml(ch.body)}</div>
+        </div>
+      `;
+    });
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+function updateSearch(val) {
+  state.searchQuery = val;
+  const container = document.getElementById("appContainer");
+  renderRoleWorkspace(container, getRoleById(state.currentRole));
+  const input = container.querySelector(".search-input");
+  if (input) {
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+  }
+}
+
+function renderBooksTab(role) {
+  let html = `
+    <div class="panel">
+      <div style="font-size: 14px; font-weight: 800; color: var(--gold-light); margin-bottom: 6px;">
+        ${role.canOpenAllBooks ? "مكتبة جميع كتب VELORA CAFFE (صلاحية فتح أي كتاب)" : "صلاحيات الكتب لحساب " + role.title}
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+        ${role.canOpenAllBooks
+          ? "يمكنك فتح ومراجعة أي كتاب من أدلة البراند مباشرة."
+          : "هذا الحساب مخصص لفتح كتاب الدور الخاص بك؛ لفتح بقية الكتب يلزم الدخول بحساب المدير أو الأونر."}
+      </p>
+      <div class="books-grid">
+  `;
+
+  ROLES_DATA.forEach(bookRole => {
+    const allowed = role.canOpenAllBooks || bookRole.id === role.id;
+    html += `
+      <div class="book-card ${allowed ? "" : "locked"}">
+        <div>
+          <span class="status-badge ${allowed ? "status-open" : "status-locked"}">
+            ${allowed ? "مفتوح للقراءة" : "مقيد بالصلاحية"}
+          </span>
+          <div style="font-size: 15px; font-weight: 800; margin-top: 8px; color: var(--text-main);">
+            دليل ${escapeHtml(bookRole.title)}
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">
+            الملف: ${escapeHtml(bookRole.sourceFile)}
+          </div>
+        </div>
+        ${
+          allowed
+            ? `<button class="btn btn-gold" onclick="previewBook('${bookRole.id}')">فتح الكتاب</button>`
+            : `<button class="btn" disabled>غير متاح لهذا الدور</button>`
+        }
+      </div>
+    `;
+  });
+
+  html += `</div></div>`;
+  return html;
+}
+
+function previewBook(targetRoleId) {
+  const target = getRoleById(targetRoleId);
+  let bodyHtml = `<p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">المصدر: <strong>${escapeHtml(target.sourceFile)}</strong></p>`;
+  target.chapters.forEach(ch => {
+    bodyHtml += `
+      <div class="chapter-item">
+        <div class="chapter-title">${escapeHtml(ch.title)}</div>
+        <div class="chapter-body">${escapeHtml(ch.body)}</div>
+      </div>
+    `;
+  });
+  showModal(`كتاب ${target.title}`, bodyHtml);
+}
+
+function renderChecklistTab(role) {
+  let totalCount = 0;
+  let checkedCount = 0;
+
+  Object.entries(role.checklist).forEach(([group, items]) => {
+    items.forEach((_, idx) => {
+      totalCount++;
+      const key = `${role.id}__${group}__${idx}`;
+      if (state.checkedItems[key]) checkedCount++;
+    });
+  });
+
+  const pct = totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
+
+  let html = `
+    <div class="panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700;">
+        <span>نسبة إتمام قائمة المتابعة: ${pct}%</span>
+        <span>${checkedCount} / ${totalCount}</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar" style="width: ${pct}%;"></div>
+      </div>
+  `;
+
+  Object.entries(role.checklist).forEach(([group, items]) => {
+    html += `<div class="check-group-title">${escapeHtml(group)}</div>`;
+    items.forEach((item, idx) => {
+      const key = `${role.id}__${group}__${idx}`;
+      const isChecked = !!state.checkedItems[key];
+      html += `
+        <label class="check-item">
+          <input type="checkbox" ${isChecked ? "checked" : ""} onchange="toggleCheck('${key}')" />
+          <span>${escapeHtml(item)}</span>
+        </label>
+      `;
+    });
+  });
+
+  html += `<button class="btn" style="margin-top: 8px;" onclick="resetChecklist('${role.id}')">إعادة ضبط القائمة</button></div>`;
+  return html;
+}
+
+function toggleCheck(key) {
+  state.checkedItems[key] = !state.checkedItems[key];
+  render();
+}
+
+function resetChecklist(roleId) {
+  Object.keys(state.checkedItems).forEach(k => {
+    if (k.startsWith(roleId + "__")) delete state.checkedItems[k];
+  });
+  render();
+}
+
+function renderPledgeTab(role) {
+  const saved = state.signatures[role.id] || { name: "", date: "" };
+  let html = `
+    <div class="panel">
+      <div class="chapter-title" style="font-size: 16px;">الميثاق والتعهد المهني — ${escapeHtml(role.title)}</div>
+      <p style="font-size: 14px; margin: 10px 0 16px; background: var(--bg-elevated); padding: 14px; border-radius: 10px; border: 1px solid var(--border-gold);">
+        ${escapeHtml(role.pledge)}
+      </p>
+      <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">اسم الموظف / المسؤول</label>
+      <input type="text" class="form-input" id="pledgeName" value="${escapeHtml(saved.name)}" placeholder="اكتب الاسم الثلاثي" />
+      <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">التاريخ</label>
+      <input type="date" class="form-input" id="pledgeDate" value="${escapeHtml(saved.date)}" />
+      <button class="btn btn-gold" onclick="savePledge('${role.id}')">تأكيد وحفظ التعهد</button>
+      ${saved.name ? `<div class="result-box">تم تأكيد الميثاق بواسطة: <strong>${escapeHtml(saved.name)}</strong> ${saved.date ? "(" + escapeHtml(saved.date) + ")" : ""}</div>` : ""}
+    </div>
+  `;
+  return html;
+}
+
+function savePledge(roleId) {
+  const name = document.getElementById("pledgeName").value.trim();
+  const date = document.getElementById("pledgeDate").value;
+  if (!name) {
+    alert("يرجى إدخال اسم الموظف أولاً.");
+    return;
+  }
+  state.signatures[roleId] = { name, date };
+  render();
+}
+
+function openToolModal(type) {
+  if (type === "cash") {
+    showModal("حاسبة جرد الكاش ومعادلة العهدة", `
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+        النقد المتوقع = عهدة البداية + المبيعات النقدية − المرتجعات أو المصروفات النقدية المعتمدة
+      </p>
+      <label style="font-size: 12px; color: var(--text-muted);">عهدة بداية الشيفت</label>
+      <input type="number" class="form-input" id="cashOpen" value="1000" />
+      <label style="font-size: 12px; color: var(--text-muted);">المبيعات النقدية (كاش)</label>
+      <input type="number" class="form-input" id="cashSales" value="0" />
+      <label style="font-size: 12px; color: var(--text-muted);">مرتجعات / مصروفات نقدية معتمدة</label>
+      <input type="number" class="form-input" id="cashDeduct" value="0" />
+      <label style="font-size: 12px; color: var(--text-muted);">العد الفعلي في الدرج</label>
+      <input type="number" class="form-input" id="cashActual" value="0" />
+      <button class="btn btn-gold" onclick="calcCash()">احسب المطابقة</button>
+      <div id="cashCalcResult"></div>
+    `);
+  } else if (type === "report") {
+    let logsHtml = state.reports.length
+      ? state.reports.map(r => `<div class="log-entry"><strong>[${escapeHtml(r.type)}]</strong> ${escapeHtml(r.item)} — الكمية: ${escapeHtml(r.qty)} | السبب: ${escapeHtml(r.reason)}</div>`).join("")
+      : `<p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">لا توجد بلاغات مسجلة في الجلسة الحالية.</p>`;
+
+    showModal("بلاغ نقص أو هدر فوري", `
+      <label style="font-size: 12px; color: var(--text-muted);">نوع البلاغ</label>
+      <select class="form-select" id="repType">
+        <option value="بلاغ نقص">بلاغ نقص</option>
+        <option value="تسجيل هدر">تسجيل هدر</option>
+        <option value="عطل / ملاحظة">عطل / ملاحظة</option>
+      </select>
+      <label style="font-size: 12px; color: var(--text-muted);">اسم الصنف أو الخامة</label>
+      <input type="text" class="form-input" id="repItem" placeholder="مثال: أكواب 12 أونصة أو حليب" />
+      <label style="font-size: 12px; color: var(--text-muted);">الكمية / الموجود مقابل الحد الأدنى</label>
+      <input type="text" class="form-input" id="repQty" placeholder="مثال: الموجود 18 / الحد الأدنى 25" />
+      <label style="font-size: 12px; color: var(--text-muted);">السبب أو الإجراء المقترح</label>
+      <input type="text" class="form-input" id="repReason" placeholder="مثال: اقتراب نفاد المخزون قبل فترة الذروة" />
+      <button class="btn btn-gold" onclick="submitReport()">تسجيل البلاغ</button>
+      <div style="margin-top: 14px;">
+        <div style="font-size: 13px; font-weight: 700; color: var(--gold-light); margin-bottom: 6px;">البلاغات المسجلة</div>
+        <div id="reportsList">${logsHtml}</div>
+      </div>
+    `);
+  }
+}
+
+function calcCash() {
+  const openAmt = parseFloat(document.getElementById("cashOpen").value) || 0;
+  const salesAmt = parseFloat(document.getElementById("cashSales").value) || 0;
+  const deductAmt = parseFloat(document.getElementById("cashDeduct").value) || 0;
+  const actualAmt = parseFloat(document.getElementById("cashActual").value) || 0;
+
+  const expected = openAmt + salesAmt - deductAmt;
+  const diff = actualAmt - expected;
+  const statusLabel = diff === 0 ? "متطابق تماماً (الفرق = 0)" : diff > 0 ? `زيادة بمقدار ${diff}` : `عجز بمقدار ${Math.abs(diff)}`;
+
+  document.getElementById("cashCalcResult").innerHTML = `
+    <div class="result-box">
+      <div>النقد المتوقع في الدرج: <strong>${expected}</strong></div>
+      <div>العد الفعلي: <strong>${actualAmt}</strong></div>
+      <div>النتيجة: <strong>${statusLabel}</strong></div>
+    </div>
+  `;
+}
+
+function submitReport() {
+  const type = document.getElementById("repType").value;
+  const item = document.getElementById("repItem").value.trim();
+  const qty = document.getElementById("repQty").value.trim();
+  const reason = document.getElementById("repReason").value.trim();
+  if (!item) {
+    alert("يرجى كتابة اسم الصنف أو الخامة.");
+    return;
+  }
+  state.reports.unshift({ type, item, qty: qty || "-", reason: reason || "-" });
+  openToolModal("report");
+}
+
+function showModal(title, bodyHtml) {
+  document.getElementById("modalTitle").textContent = title;
+  document.getElementById("modalBody").innerHTML = bodyHtml;
+  document.getElementById("modalBackdrop").classList.add("open");
+}
+
+function closeModal() {
+  document.getElementById("modalBackdrop").classList.remove("open");
+}
+
+function escapeHtml(str) {
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+render();
+</script>
+</body>
+</html>
